@@ -6,6 +6,16 @@ import knex from 'knex';
 import knexfile from '../knexfile.js';
 const db = knex(knexfile.development);
 
+router.route('/')
+    .get(async (req, res) => {
+        try {
+            const warehouseData = await db('warehouses')
+            return res.status(200).json(warehouseData)
+        } catch (err) {
+            res.status(404).json({message: "No Warehouses Found!"})
+        }
+    })
+
 router.delete("/:id", async (req, res) => {
     const id = req.params.id
     try {
