@@ -39,11 +39,39 @@ router.get('/:id', async (req, res) => {
         email: warehouse.contact_email
       }
     });
-  } catch (error) {
-    console.error(`Error fetching warehouse with ID ${id}:`, error);
-    res.status(500).json({ error: 'Internal Server Error' });
   }
-});
+  catch(err){
+    res.status(404).json({message:err})
+  }
+})
+
+    router.route('/:id/inventories')
+    .get(async (req, res) => {
+        const{id} =req.params;
+        try {
+            const itemData = await db('inventories')
+                .where({"inventories.warehouse_id":id})
+            if(itemData.length === 0){
+                return res.status(404).json({message:`Warehouse with id ${id} not found`});
+            }else{
+             const items = itemData.map(item => {
+                    return{
+                      id: item.id,
+                      item_name: item.item_name,
+                      category:item.category,
+                      status: item.status,
+                      quantity: item.quantity
+                    }
+              })
+            return res.status(200).json(items)
+            } 
+        } catch (err) {
+            res.status(404).json({message:err})
+        }
+    })
+
+
+
 
 
 router.delete("/:id", async (req, res) => {
