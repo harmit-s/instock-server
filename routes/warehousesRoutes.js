@@ -60,4 +60,60 @@ router.delete("/:id", async (req, res) => {
   }
 })
 
+
+router.post('/', async (req, res) => {
+  const {
+    warehouse_name,
+    address,
+    city,
+    country,
+    contact_name,
+    contact_position,
+    contact_phone,
+    contact_email
+  } = req.body;
+
+  if (!warehouse_name || !address || !city || !country || !contact_name || !contact_position || !contact_phone || !contact_email) {
+    return res.status(400).json({ error: 'Missing required fields in request, please check' });
+  }
+
+  if (!validPhoneNumber(contact_phone)) {
+    return res.status(400).json({ error: 'Invalid phone number format, please use only digits' });
+  }
+
+  if (!validEmail(contact_email)) {
+    return res.status(400).json({ error: 'Invalid email address format' });
+  }
+
+  try {
+    
+    const [newWarehouseId] = await db('warehouses').insert({
+      warehouse_name,
+      address,
+      city,
+      country,
+      contact_name,
+      contact_position,
+      contact_phone,
+      contact_email
+    });
+
+    const newWarehouse = await db('warehouses').where({ id: newWarehouseId }).first();
+
+    return res.status(201).json(newWarehouse);
+  } catch (error) {
+    console.error('Error creating new warehouse:', error);
+    return res.status(500).json({ error: 'Error' });
+  }
+
+});
+
+function validPhoneNumber(phone) {
+  return /^\d+$/.test(phone);
+}
+
+function validEmail(email) {
+  return email.includes('@') && email.includes('.');
+}
+
 export default router;
