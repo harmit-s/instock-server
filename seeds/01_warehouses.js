@@ -4,6 +4,7 @@ import knex from 'knex';
  * @returns { Promise<void> }
  */
 export async function seed(knex) {
+  await knex('warehouses').get() 
   // Deletes ALL existing entries
   await knex('warehouses').del();
   await knex('warehouses').insert([
