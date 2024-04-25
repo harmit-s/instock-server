@@ -1,4 +1,5 @@
 import express from 'express';
+<<<<<<< HEAD
 import knex from 'knex';
 import knexConfig from '../knexfile.js'; 
 const myknex = knex(knexConfig); 
@@ -41,6 +42,37 @@ router.get('/:id', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+=======
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+const router = express.Router()
+import knex from 'knex';
+import knexfile from '../knexfile.js';
+const db = knex(knexfile.development);
 
+router.route('/')
+    .get(async (req, res) => {
+        try {
+            const warehouseData = await db('warehouses')
+            return res.status(200).json(warehouseData)
+        } catch (err) {
+            res.status(404).json({message: "No Warehouses Found!"})
+        }
+    })
+>>>>>>> develop
+
+router.delete("/:id", async (req, res) => {
+    const id = req.params.id
+    try {
+        const warehouseData = await db('warehouses')
+            .where({id: id})
+            .del();
+
+        res.status(204).json("")
+    }
+    catch (err) {
+        res.status(404).json({message: "No Warehouse Found!"})
+    }
+})
 
 export default router;
