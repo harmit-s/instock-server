@@ -83,16 +83,14 @@ router.put('/:id', async (req, res, next) => {
       status,
       quantity
     } = req.body;
-    if (!item_name || !description || !category || !status || !quantity)
-    {
+    
+    if (!item_name || !description || !category || !status || !quantity) {
         return res.status(400).json({ error: 'All fields are required' });
     }
-    next()
   
     try {
       const itemsData = await db('inventories')
         .where({ 'inventories.id': id })
-        .join('warehouses', 'warehouses.id', 'inventories.warehouse_id')
         .first();
   
       if (!itemsData) {
