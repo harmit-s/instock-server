@@ -37,54 +37,6 @@ router.get('/:id', async (req, res) => {
     catch(err){
         res.status(404).json({message:err})
     }
-<<<<<<< HEAD
-
-    res.json({
-      id: warehouse.id,
-      warehouse_name: warehouse.warehouse_name,
-      address: warehouse.address,
-      city: warehouse.city,
-      country: warehouse.country,
-      contact: {
-        name: warehouse.contact_name,
-        position: warehouse.contact_position,
-        phone: warehouse.contact_phone,
-        email: warehouse.contact_email
-      }
-    });
-  } catch (error) {
-    console.error(`Error fetching warehouse with ID ${id}:`, error);
-    res.status(500).json({ error: 'error' });
-  }
-});
-
-router.route('/:id/inventories')
-.get(async (req, res) => {
-    const{id} =req.params;
-    try {
-        const itemData = await db('inventories')
-            .where({"inventories.warehouse_id":id})
-        if(itemData.length === 0){
-            return res.status(404).json({message:`Warehouse with id ${id} not found`});
-        }else{
-         const items = itemData.map(item => {
-                return{
-                  id: item.id,
-                  item_name: item.item_name,
-                  category:item.category,
-                  status: item.status,
-                  quantity: item.quantity
-                }
-          })
-        return res.status(200).json(items)
-        } 
-    } catch (err) {
-        res.status(404).json({message:err})
-    }
-})
-
-
-=======
 })
 const validateWarehouseData = (req, res, next) => {
     const {
@@ -160,7 +112,6 @@ router.route('/:id/inventories')
             res.status(404).json({message:err})
         }
     })
->>>>>>> develop
 router.delete("/:id", async (req, res) => {
     const id = req.params.id
     try {
