@@ -55,20 +55,24 @@ router.route('/')
         }
     })
 
+    router.delete("/:id", async (req, res) => {
+        const id = req.params.id
+        try {
+            const itemData = await db('inventories')
+                .where({ id: id })
+                .del();
+    
+            if (itemData === 0) {
+                res.status(404).json({ message: "No Inventory Item Found!" });
+            } else {
+                res.status(204).json("");
+            }
+        }
+        catch (err) {
+            res.status(404).json({ message: "No Inventory Item Found!" })
+        }
+    })
 
-router.delete("/:id", async (req, res) => {
-    const id = req.params.id
-    try {
-        const itemData = await db('inventories')
-            .where({ id: id })
-            .del();
-
-        res.status(204).json("")
-    }
-    catch (err) {
-        res.status(404).json({ message: "No Inventory Item Found!" })
-    }
-})
 
 router.put('/:id', async (req, res, next) => {
     const { id } = req.params;
