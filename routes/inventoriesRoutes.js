@@ -82,35 +82,35 @@ router.patch('/:id', async (req, res) => {
     } = req.body;
   
     try {
-      const itemData = await db('inventories')
+      const itemsData = await db('inventories')
         .where({ 'inventories.id': id })
-        // .join('warehouses', 'warehouses.id', 'inventories.warehouse_id')
+        .join('warehouses', 'warehouses.id', 'inventories.warehouse_id')
         .first();
   
-      if (!itemData) {
+      if (!itemsData) {
         return res.status(404).json({ message: `inventory item with id ${id} not found` });
       }
   
-      const warehouseExists = await db('warehouses').where({ "warehouse_id":id });
+      const warehouseExists = await db('warehouses').where({ 'id':id });
       if (!warehouseExists) {
-        return res.status(400).json({ message: `warehouse with id ${warehouse_id} does not exist` });
+        return res.status(400).json({ message: `warehouse with id ${id} does not exist` });
       }
   
-    
-      if (isNaN(quantity) || typeof quantity !== 'number') {
+      const updatedFields = {};
+      if (item_name) updatedFields.item_name = item_name;
+      if (description) updatedFields.description = description;
+      if (category) updatedFields.category = category;
+      if (status) updatedFields.status = status;
+      if (!isNaN(quantity)) updatedFields.quantity = Number(quantity);
+  
+      
+      if (updatedFields.quantity && isNaN(updatedFields.quantity)) {
         return res.status(400).json({ message: 'quantity must be a valid number' });
       }
   
       await db('inventories')
         .where({ id })
-        .update({
-          warehouse_id,
-          item_name,
-          description,
-          category,
-          status,
-          quantity
-        });
+        .update(updatedFields);
   
       const updatedItem = await db('inventories').where({ id }).first();
   
