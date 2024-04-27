@@ -54,16 +54,30 @@ router.route('/')
             res.status(404).json({ message: "No Inventory" })
         }
     })
+
     .post(async (req, res) => {
         try {
             const { warehouse_id, 
                     item_name, 
-                    description,
+                    description, 
                     category, 
                     status, 
                     quantity } = req.body;
     
-            await db('inventories').insert({
+            if (!warehouse_id || !item_name || !description || !category 
+                    || !status || !quantity) 
+                {return res.status(400).json({ message: "Missing properties in request body" });}
+    
+            const warehouseExists = await db('warehouses').where('id', warehouse_id).first();
+            if (!warehouseExists) {
+                return res.status(400).json({ message: "Invalid warehouse_id" });
+            }
+    
+            if (isNaN(quantity)) {
+                return res.status(400).json({ message: "Quantity must be a number" });
+            }
+    
+            const [itemId] = await db('inventories').insert({
                 warehouse_id,
                 item_name,
                 description,
@@ -72,12 +86,23 @@ router.route('/')
                 quantity
             });
     
-            return res.status(201).json({ message: "Item added successfully" });
+            const addedItem = {
+                id: itemId,
+                warehouse_id,
+                item_name,
+                description,
+                category,
+                status,
+                quantity
+            };
+    
+            return res.status(201).json({ message: "Item added successfully", addedItem });
         } catch (err) {
             console.error("Error adding item:", err);
             res.status(500).json({ message: "Failed to add item to inventory" });
         }
     })
+    
 
     router.delete("/:id", async (req, res) => {
         const id = req.params.id
