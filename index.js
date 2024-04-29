@@ -6,17 +6,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-
-app.use('/warehouses', warehousesRouter);
-app.use('/inventories', inventoriesRouter);
+app.use('/api/warehouses', warehousesRouter);
+app.use('/api/inventories', inventoriesRouter);
 
 const PORT = process.env.PORT || 8080;
 
